@@ -15,15 +15,17 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { Link, useNavigate } from "react-router-dom"
 
-export function LoginForm({ className, onSignupClick, ...props }) {
-  // ✅ hooks go INSIDE the component
+export function LoginForm({ className, ...props }) {
+  const navigate = useNavigate()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
   const handleSubmit = (e) => {
     e.preventDefault()
     console.log({ email, password }) // replace with your API call
+    navigate("/dashboard") // go to the dashboard after login
   }
 
   return (
@@ -73,16 +75,7 @@ export function LoginForm({ className, onSignupClick, ...props }) {
                   Login with Google
                 </Button>
                 <FieldDescription className="text-center">
-                  Don&apos;t have an account? {" "}
-                  <a 
-                    href="#"
-                    onClick={(e) => {
-                        e.preventDefault()
-                        onSignupClick()
-                      }}
-                    >
-                      Sign up
-                    </a>
+                  Don&apos; t have an account? <Link to="/signup">Sign up</Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>

@@ -13,8 +13,9 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { Link } from "react-router-dom"
 
-export function SignupForm({ className, onLoginClick, ...props }) {
+export function SignupForm({...props }) {
   return (
     <Card {...props}>
       <CardHeader>
@@ -63,17 +64,8 @@ export function SignupForm({ className, onLoginClick, ...props }) {
                 <Button variant="outline" type="button">
                   Sign up with Google
                 </Button>
-                <FieldDescription className="px-6 text-center">
-                  Already have an account? {" "}
-                  <a 
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      onLoginClick()
-                    }}
-                    >
-                    Sign in  
-                    </a>
+                <FieldDescription className="text-center">
+                  Already have an account? <Link to="/login">Sign in</Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>
