@@ -1,5 +1,5 @@
 import { cn } from "cn"
-
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -10,14 +10,26 @@ import {
   FieldSeparator,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Link } from "react-router-dom"
+import { Link, useNavigate} from "react-router-dom"
+import organizerPicture from "@/assets/organizer-picture.webp"
 
 export function SignupForm({ className, ...props}) {
+  const navigate = useNavigate()
+  const [email, setEmail] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [password, setPassword] = useState("")
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    console.log({ email, password }) // replace with your API call
+    navigate("/dashboard") // go to the dashboard after login
+  }
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8">
+          <form onSubmit={handleSubmit} className="p-6 md:p-8">
             <FieldGroup>
               <div className="flex flex-col items-center gap-2 text-center">
                 <h1 className="text-2xl font-bold">Create your account</h1>
@@ -31,6 +43,8 @@ export function SignupForm({ className, ...props}) {
                   id="email"
                   type="email"
                   placeholder="m@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
                 <FieldDescription>
@@ -42,13 +56,24 @@ export function SignupForm({ className, ...props}) {
                 <Field className="grid grid-cols-2 gap-4">
                   <Field>
                     <FieldLabel htmlFor="password">Password</FieldLabel>
-                    <Input id="password" type="password" required />
+                    <Input 
+                      id="password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      />
                   </Field>
                   <Field>
                     <FieldLabel htmlFor="confirm-password">
                       Confirm Password
                     </FieldLabel>
-                    <Input id="confirm-password" type="password" required />
+                    <Input 
+                    id="confirm-password" 
+                    type="password" 
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required />
                   </Field>
                 </Field>
                 <FieldDescription>
@@ -97,7 +122,7 @@ export function SignupForm({ className, ...props}) {
           </form>
           <div className="relative hidden bg-muted md:block">
             <img
-              src="/placeholder.svg"
+              src={organizerPicture}
               alt="Image"
               className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
             />
