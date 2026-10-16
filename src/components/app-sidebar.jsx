@@ -17,8 +17,8 @@ import { LayoutDashboardIcon, ListIcon, ChartBarIcon, FolderIcon, UsersIcon, Cam
 
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
+    name: "Gian Caparas",
+    email: "giancaparax@gmail.com",
     avatar: "/avatars/shadcn.jpg",
   },
   navMain: [
@@ -186,7 +186,7 @@ export function AppSidebar({
               render={<a href="#" />}
             >
               <CommandIcon className="size-5!" />
-              <span className="text-base font-semibold">Acme Inc.</span>
+              <span className="text-base font-semibold">Han-ay</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
