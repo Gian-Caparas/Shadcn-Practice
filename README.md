@@ -1,16 +1,35 @@
-# React + Vite
+# Han-ay
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Supabase authentication
 
-Currently, two official plugins are available:
+The login and signup forms use Supabase email/password authentication.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. Create a project at [supabase.com](https://supabase.com).
+2. Open **Project Settings > API** and copy the **Project URL** and the
+   **Publishable key** (or legacy `anon` key).
+3. Create a local `.env` file from `.env.example`:
 
-## React Compiler
+   ```env
+   VITE_SUPABASE_URL=https://your-project-ref.supabase.co
+   VITE_SUPABASE_ANON_KEY=your-publishable-or-anon-key
+   ```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+4. In Supabase, open **Authentication > Providers > Email** and enable email
+   signups. If **Confirm email** is enabled, new users must click the email
+   confirmation link before logging in.
+5. Add `http://localhost:5173` under **Authentication > URL Configuration >
+   Site URL** while developing.
+6. Start the app:
 
-## Expanding the ESLint configuration
+   ```bash
+   npm install
+   npm run dev
+   ```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+The browser only receives the Supabase publishable/anon key. Never put a
+Supabase service-role key in `.env` or client-side code. The dashboard is
+protected by the current Supabase session, and the sidebar's **Log out** item
+calls `supabase.auth.signOut()`.
+
+For production, add the deployed site URL to Supabase's URL Configuration and
+set the same `VITE_` variables in the hosting provider's build environment.

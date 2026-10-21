@@ -19,11 +19,37 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { EllipsisVerticalIcon, CircleUserRoundIcon, CreditCardIcon, BellIcon, LogOutIcon } from "lucide-react"
+import { supabase } from "@/lib/supabase"
+import { useAuth } from "@/lib/use-auth"
+import { useNavigate } from "react-router-dom"
 
 export function NavUser({
   user
 }) {
   const { isMobile } = useSidebar()
+  const navigate = useNavigate()
+  const { user: authUser } = useAuth()
+  const displayUser = authUser
+    ? {
+        ...user,
+        name: authUser.user_metadata?.full_name || authUser.email?.split("@")[0] || user.name,
+        email: authUser.email || user.email,
+      }
+    : user
+
+  const handleLogout = async () => {
+    if (supabase) {
+      const { error } = await supabase.auth.signOut()
+
+      if (error) {
+        console.error("Unable to log out:", error.message)
+        return
+      }
+    }
+
+    navigate("/login", { replace: true })
+  }
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -34,13 +60,13 @@ export function NavUser({
             }
           >
             <Avatar className="size-8 rounded-lg grayscale">
-              <AvatarImage src={user.avatar} alt={user.name} />
+              <AvatarImage src={displayUser.avatar} alt={displayUser.name} />
               <AvatarFallback className="rounded-lg">CN</AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-medium">{user.name}</span>
+              <span className="truncate font-medium">{displayUser.name}</span>
               <span className="truncate text-xs text-foreground/70">
-                {user.email}
+                {displayUser.email}
               </span>
             </div>
             <EllipsisVerticalIcon className="ml-auto size-4" />
@@ -55,13 +81,13 @@ export function NavUser({
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                   <Avatar className="size-8">
-                    <AvatarImage src={user.avatar} alt={user.name} />
+                    <AvatarImage src={displayUser.avatar} alt={displayUser.name} />
                     <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-medium">{user.name}</span>
+                    <span className="truncate font-medium">{displayUser.name}</span>
                     <span className="truncate text-xs text-muted-foreground">
-                      {user.email}
+                      {displayUser.email}
                     </span>
                   </div>
                 </div>
@@ -86,7 +112,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOutIcon
               />
               Log out

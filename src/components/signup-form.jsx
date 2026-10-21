@@ -12,17 +12,56 @@ import {
 import { Input } from "@/components/ui/input"
 import { Link, useNavigate} from "react-router-dom"
 import organizerPicture from "@/assets/organizer-picture.webp"
+import { supabase } from "@/lib/supabase"
 
 export function SignupForm({ className, ...props}) {
   const navigate = useNavigate()
   const [email, setEmail] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+  const [message, setMessage] = useState("")
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log({ email, password }) // replace with your API call
-    navigate("/dashboard") // go to the dashboard after login
+    setError("")
+    setMessage("")
+
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters long.")
+      return
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.")
+      return
+    }
+
+    if (!supabase) {
+      setError("Supabase is not configured. Add the VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables.")
+      return
+    }
+
+    setLoading(true)
+    const { data, error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+    })
+
+    if (signUpError) {
+      setError(signUpError.message)
+      setLoading(false)
+      return
+    }
+
+    if (data.session) {
+      navigate("/dashboard")
+      return
+    }
+
+    setMessage("Account created. Check your email to confirm your account, then sign in.")
+    setLoading(false)
   }
 
   return (
@@ -31,6 +70,8 @@ export function SignupForm({ className, ...props}) {
         <CardContent className="grid p-0 md:grid-cols-2">
           <form onSubmit={handleSubmit} className="p-6 md:p-8">
             <FieldGroup>
+              {error && <p className="text-sm text-destructive" role="alert">{error}</p>}
+              {message && <p className="text-sm text-green-600" role="status">{message}</p>}
               <div className="flex flex-col items-center gap-2 text-center">
                 <h1 className="text-2xl font-bold">Create your account</h1>
                 <p className="text-sm text-balance text-muted-foreground">
@@ -81,7 +122,9 @@ export function SignupForm({ className, ...props}) {
                 </FieldDescription>
               </Field>
               <Field>
-                <Button type="submit">Create Account</Button>
+                <Button type="submit" disabled={loading}>
+                  {loading ? "Creating account..." : "Create Account"}
+                </Button>
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
                 Or continue with

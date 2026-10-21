@@ -17,17 +17,38 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Link, useNavigate } from "react-router-dom"
+import { supabase } from "@/lib/supabase"
 
 
 export function LoginForm({ className, ...props }) {
   const navigate = useNavigate()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log({ email, password }) // replace with your API call
-    navigate("/dashboard") // go to the dashboard after login
+    setError("")
+
+    if (!supabase) {
+      setError("Supabase is not configured. Add the VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables.")
+      return
+    }
+
+    setLoading(true)
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    if (signInError) {
+      setError(signInError.message)
+      setLoading(false)
+      return
+    }
+
+    navigate("/dashboard")
   }
 
   return (
@@ -42,6 +63,11 @@ export function LoginForm({ className, ...props }) {
         <CardContent>
           <form onSubmit={handleSubmit}>
             <FieldGroup>
+              {error && (
+                <p className="text-center text-sm text-destructive" role="alert">
+                  {error}
+                </p>
+              )}
               <Field>
                 <Button variant="outline" type="button">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -104,7 +130,9 @@ export function LoginForm({ className, ...props }) {
                 />
               </Field>
               <Field>
-                <Button type="submit">Login</Button>
+                <Button type="submit" disabled={loading}>
+                  {loading ? "Logging in..." : "Login"}
+                </Button>
                 <FieldDescription className="text-center">
                   Don&apos; t have an account? <Link to="/signup">Sign up</Link>
                 </FieldDescription>
